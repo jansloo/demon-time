@@ -1,0 +1,917 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Demon Time">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#F4E6EA">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style id="standalone-root">
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; }
+</style>
+<!--ARTIFACT-START-->
+<title>Demon Time</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;600;700;800;900&display=swap">
+<style>
+:root {
+  color-scheme: light;
+  --ground: #F4E6EA;
+  --stripe: rgba(150, 60, 85, .05);
+  --card: #FFF8F9;
+  --card-line: #EFD9DF;
+  --field: #F3E4E8;
+  --field-line: #E3CAD1;
+  --rule: #E2C9D0;
+  --ink: #22090F;
+  --muted: #6D4F57;
+  --faint: #9C7F87;
+  --crimson: #C41E45;
+  --crimson-soft: #DC7189;
+  --crimson-wash: #F9D3DC;
+  --coral: #FF6352;
+  --coral-ink: #2A0A12;
+  --coral-note: #7E1B1E;
+  --maroon: #3D1A27;
+  --button-ink: #33060F;
+  --toast: #F6D5DD;
+  --warn: #C2413A;
+  --font: "Figtree", ui-rounded, -apple-system, "SF Pro Rounded", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html { background: var(--ground); -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: var(--font);
+  color: var(--ink);
+  background:
+    repeating-linear-gradient(135deg, transparent 0 46px, var(--stripe) 46px 47px),
+    var(--ground);
+  background-attachment: fixed;
+  -webkit-tap-highlight-color: transparent;
+}
+body.locked { overflow: hidden; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--crimson); outline-offset: 2px; }
+img { max-width: 100%; }
+
+.app {
+  max-width: 520px;
+  margin: 0 auto;
+  padding-inline: 16px;
+  padding-block: 18px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ---------- brand (only when installed to Home Screen) ---------- */
+.brand { display: none; align-items: center; gap: 8px; font-weight: 900; font-size: 15px; letter-spacing: -.01em; }
+.brand svg { width: 24px; height: 24px; }
+@media (display-mode: standalone) { .brand { display: flex; } }
+
+/* ---------- header ---------- */
+.top { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.date { font-size: 13px; font-weight: 800; color: var(--muted); letter-spacing: .01em; }
+h1.today { margin: 2px 0 0; font-size: 46px; line-height: .95; font-weight: 900; letter-spacing: -.045em; }
+.icon-btn {
+  width: 42px; height: 42px; flex: none; border-radius: 50%;
+  border: 1px solid var(--card-line); background: var(--card);
+  display: grid; place-items: center;
+  box-shadow: 0 4px 14px rgba(80, 20, 40, .08);
+  align-self: center;
+}
+.icon-btn svg { width: 20px; height: 20px; stroke: var(--ink); }
+.icon-btn[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); }
+.icon-btn[aria-pressed="true"] svg { stroke: #fff; }
+
+/* ---------- banners ---------- */
+.toast {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: var(--toast); border-radius: 12px; padding: 12px 14px;
+  font-size: 15px; font-weight: 600;
+  animation: drop .25s ease-out;
+}
+.toast button { background: none; border: 0; padding: 4px; display: grid; }
+.toast svg { width: 16px; height: 16px; stroke: var(--ink); stroke-width: 2.6; }
+.toast.warn { background: #FFE9C7; }
+@keyframes drop { from { transform: translateY(-6px); opacity: 0; } }
+
+/* ---------- cards ---------- */
+.card {
+  background: var(--card); border: 1px solid var(--card-line);
+  border-radius: 24px; padding: 22px;
+  box-shadow: 0 10px 30px rgba(90, 30, 50, .06);
+}
+.eyebrow { font-size: 13px; font-weight: 800; color: var(--muted); letter-spacing: .01em; margin: 0; }
+.card-title { margin: 2px 0 0; font-size: 22px; font-weight: 400; letter-spacing: -.01em; }
+
+/* onboarding */
+.mascot { width: 76px; height: 76px; display: block; }
+.onboard .eyebrow { margin-top: 18px; }
+.onboard h2 {
+  margin: 6px 0 0; font-size: 38px; line-height: 1.04; font-weight: 300; letter-spacing: -.035em;
+  text-wrap: balance;
+}
+.onboard p.lead { margin: 14px 0 0; font-size: 16px; line-height: 1.5; font-weight: 300; color: var(--muted); max-width: 34ch; }
+.onboard hr { border: 0; border-top: 1px solid var(--rule); margin: 18px 0 16px; }
+
+/* form */
+.form { display: flex; flex-direction: column; gap: 8px; }
+.form label { font-size: 12px; font-weight: 800; color: var(--muted); margin-top: 6px; }
+.field {
+  -webkit-appearance: none; appearance: none;
+  display: block; width: 100%; min-width: 0; max-width: 100%;
+  height: 44px; padding: 0 12px;
+  background: var(--field); border: 1px solid var(--field-line); border-radius: 12px;
+  font: 700 16px/1 var(--font); color: var(--ink);
+}
+.field::placeholder { color: var(--faint); opacity: 1; }
+input[type="time"].field { text-align: left; }
+input[type="time"].field::-webkit-date-and-time-value { text-align: left; }
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; height: 44px; border: 0; border-radius: 14px;
+  font-weight: 900; font-size: 16px; letter-spacing: -.005em;
+  transition: transform .1s ease, background .15s ease;
+}
+.btn:active { transform: scale(.985); }
+.btn.primary { background: var(--crimson); color: #fff; }
+.btn.primary:disabled { background: var(--crimson-soft); cursor: default; transform: none; }
+.form .btn { margin-top: 10px; }
+.link { background: none; border: 0; padding: 4px 0; font-weight: 800; font-size: 15px; color: var(--crimson); }
+.link.danger { color: var(--warn); }
+.link.quiet { color: var(--muted); }
+
+/* lineup panel */
+.lineup-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+.lineup-list { list-style: none; margin: 0 0 8px; padding: 0; }
+.lineup-list li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+.lineup-list li:first-child { border-top: 1px solid var(--rule); }
+.lineup-list .t { font-weight: 800; font-size: 13px; width: 70px; flex: none; font-variant-numeric: tabular-nums; }
+.lineup-list .n { flex: 1; min-width: 0; font-weight: 700; font-size: 15px; overflow-wrap: anywhere; }
+.lineup-list li.editing { background: var(--field); margin-inline: -10px; padding-inline: 10px; border-radius: 10px; }
+.edit-row { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+.confirm {
+  margin-top: 12px; padding: 12px 14px; border-radius: 14px; background: #FBE3E8;
+  display: flex; flex-direction: column; gap: 10px; font-weight: 700; font-size: 15px;
+}
+.confirm .row-btns { display: flex; gap: 10px; }
+.confirm .row-btns button { flex: 1; height: 40px; border-radius: 12px; border: 0; font-weight: 800; }
+.confirm .keep { background: var(--card); border: 1px solid var(--card-line) !important; }
+.confirm .go { background: var(--warn); color: #fff; }
+.clear-zone { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--rule); }
+
+/* hero */
+.hero {
+  position: relative; overflow: hidden; isolation: isolate;
+  border-radius: 28px; padding: 26px 22px 22px;
+  box-shadow: 0 16px 34px rgba(90, 30, 50, .14);
+}
+.hero .oni {
+  position: absolute; z-index: -1; right: -8px; top: 14px;
+  font-size: 118px; line-height: 1; pointer-events: none; user-select: none;
+}
+.hero.due { background: var(--coral); color: var(--coral-ink); }
+.hero.due .oni { opacity: .28; filter: saturate(.5); }
+.hero.overdue { background: var(--crimson); color: #fff; }
+.hero.overdue .oni { opacity: .22; filter: grayscale(.4); }
+.hero.won { background: var(--maroon); color: #fff; padding-block: 44px; }
+.hero.won .oni { opacity: .3; filter: grayscale(.5) brightness(.55); top: 20px; right: 14px; }
+.hero .meta { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-weight: 900; font-size: 15px; }
+.hero .meta .tag { display: flex; align-items: center; gap: 8px; }
+.pulse { width: 12px; height: 12px; border-radius: 50%; background: currentColor; position: relative; }
+.pulse::after {
+  content: ""; position: absolute; inset: -5px; border-radius: 50%;
+  background: currentColor; opacity: .18; animation: pulse 1.6s ease-out infinite;
+}
+@keyframes pulse { from { transform: scale(.5); opacity: .35; } to { transform: scale(1.4); opacity: 0; } }
+.hero h2 {
+  margin: 6px 0 0; font-size: 42px; line-height: .98; font-weight: 900; letter-spacing: -.045em;
+  text-wrap: balance;
+}
+.hero .task { margin: 16px 0 0; font-size: 19px; font-weight: 600; overflow-wrap: anywhere; }
+.hero .snap { margin-top: 20px; height: 54px; border-radius: 18px; background: var(--button-ink); color: #fff; font-size: 17px; }
+.hero .snap svg { width: 20px; height: 20px; stroke: #fff; }
+.hero .note { margin: 12px 0 0; text-align: center; font-size: 12.5px; font-weight: 800; }
+.hero.due .note { color: var(--coral-note); }
+.hero.overdue .note { color: rgba(255, 255, 255, .82); }
+.hero .more { margin: 8px 0 0; text-align: center; font-size: 13px; font-weight: 700; opacity: .85; }
+.hero.won .eyebrow { color: rgba(255, 255, 255, .78); font-size: 15px; }
+.hero.won h2 { color: #FFF4F6; font-size: 44px; margin-top: 8px; }
+.hero.won p.sub { margin: 18px 0 0; font-size: 17px; font-weight: 600; color: rgba(255, 255, 255, .92); }
+.hero.won .ring {
+  position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, .9); display: grid; place-items: center;
+}
+.hero.won .ring svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 2.4; }
+.idle { display: flex; gap: 16px; align-items: center; }
+.idle .mascot { width: 58px; height: 58px; flex: none; }
+.idle h2 { margin: 2px 0 0; font-size: 24px; font-weight: 300; letter-spacing: -.02em; line-height: 1.1; }
+.idle p { margin: 4px 0 0; color: var(--muted); font-size: 14px; font-weight: 600; }
+
+/* sections */
+.section { margin-top: 18px; }
+.section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
+.section-head.plain { border-bottom: 0; padding-bottom: 10px; }
+.section-title { margin: 2px 0 0; font-size: 24px; font-weight: 300; letter-spacing: -.015em; }
+.count {
+  min-width: 40px; height: 28px; padding: 0 10px; border-radius: 14px;
+  background: var(--crimson-wash); color: var(--crimson);
+  font-weight: 900; font-size: 14px; display: grid; place-items: center; font-variant-numeric: tabular-nums;
+}
+
+/* task rows */
+.rows { list-style: none; margin: 0; padding: 0; }
+.task-row {
+  display: grid; grid-template-columns: 72px 1fr auto; align-items: center; gap: 12px;
+  width: 100%; padding: 16px 0; min-height: 76px;
+  background: none; border: 0; border-bottom: 1px solid var(--rule); text-align: left;
+}
+.task-row .time { font-weight: 900; font-size: 14px; font-variant-numeric: tabular-nums; }
+.task-row .name { font-weight: 800; font-size: 16px; overflow-wrap: anywhere; }
+.task-row .status { margin-top: 3px; font-size: 13.5px; font-weight: 400; color: var(--muted); }
+.task-row.due .status { color: var(--warn); font-weight: 800; }
+.task-row.overdue .status { color: var(--crimson); font-weight: 900; }
+.task-row.overdue .time { color: var(--crimson); }
+.task-row.upcoming .time, .task-row.upcoming .name { color: var(--muted); }
+.pill {
+  height: 32px; padding: 0 14px; border-radius: 12px; display: grid; place-items: center;
+  background: var(--crimson-wash); color: var(--crimson); font-weight: 900; font-size: 14px; white-space: nowrap;
+}
+.task-row.overdue .pill { background: var(--crimson); color: #fff; }
+.ring-empty { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--field-line); margin-right: 6px; }
+.thumb { position: relative; width: 48px; height: 48px; flex: none; }
+.thumb img, .thumb .ph {
+  width: 48px; height: 48px; border-radius: 10px; object-fit: cover; display: block;
+  background: var(--field);
+}
+.thumb .badge {
+  position: absolute; right: -4px; bottom: -4px; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--crimson); border: 2px solid var(--card); display: grid; place-items: center;
+}
+.thumb .badge svg { width: 10px; height: 10px; stroke: #fff; stroke-width: 3; }
+.retry {
+  width: 48px; height: 48px; border-radius: 10px; border: 1.5px dashed var(--warn);
+  background: #FBE3E8; color: var(--warn); font-size: 11px; font-weight: 900;
+  display: grid; place-items: center;
+}
+
+/* vault */
+.vault { display: flex; flex-direction: column; gap: 10px; }
+.vault-item {
+  display: grid; grid-template-columns: 48px 1fr auto; align-items: center; gap: 14px;
+  width: 100%; padding: 10px 12px; text-align: left;
+  background: var(--card); border: 1px solid var(--card-line); border-radius: 18px;
+}
+.vault-item .name { font-weight: 800; font-size: 16px; overflow-wrap: anywhere; }
+.vault-item .stamp { margin-top: 2px; font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.vault-item .sched { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.empty-note { margin: 0; color: var(--muted); font-size: 14px; }
+
+/* overlay */
+.overlay {
+  position: fixed; inset: 0; z-index: 50; background: #140509; color: #fff;
+  display: flex; flex-direction: column;
+  padding: calc(env(safe-area-inset-top, 0px) + 14px) 16px calc(env(safe-area-inset-bottom, 0px) + 16px);
+  animation: fade .18s ease-out;
+}
+@keyframes fade { from { opacity: 0; } }
+.ov-top { display: flex; align-items: center; gap: 12px; }
+.ov-top .who { flex: 1; min-width: 0; }
+.ov-top .who small { display: block; font-size: 12px; font-weight: 800; color: rgba(255, 255, 255, .6); }
+.ov-top .who strong { font-size: 18px; font-weight: 900; overflow-wrap: anywhere; }
+.ov-close { width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(255, 255, 255, .12); display: grid; place-items: center; }
+.ov-close svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 2.6; }
+.ov-img { flex: 1; min-height: 0; display: grid; place-items: center; padding: 14px 0; }
+.ov-img img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 16px; }
+.ov-err { margin: 0 0 12px; padding: 12px 14px; border-radius: 12px; background: #5A1422; font-weight: 700; font-size: 15px; }
+.ov-actions { display: flex; gap: 10px; }
+.ov-actions .btn { height: 52px; }
+.btn.ghost { background: rgba(255, 255, 255, .12); color: #fff; }
+.ov-note { margin: 0 0 12px; font-size: 13px; color: rgba(255, 255, 255, .65); text-align: center; }
+.ov .confirm { background: #2D0E17; color: #fff; }
+.overlay .confirm .keep { background: rgba(255, 255, 255, .12); border: 0 !important; color: #fff; }
+.spinner { width: 36px; height: 36px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, .2); border-top-color: #fff; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.busy { display: flex; flex-direction: column; align-items: center; gap: 14px; font-weight: 700; }
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="app" id="app" aria-live="polite"></div>
+<div id="overlay-root"></div>
+<input type="file" id="camera" accept="image/*" capture="environment" class="sr-only" tabindex="-1" aria-hidden="true">
+
+<script>
+(() => {
+  'use strict';
+
+  const DUE_WINDOW_MIN = 60;           // minutes a task stays "Due now" before it turns "Overdue"
+  const RETENTION_MS = 7 * 864e5;      // rolling 7-day photo history
+  const MAX_EDGE = 1600;               // longest edge of the saved JPEG
+  const PHOTO_ERROR = "That photo didn't save properly. Please take it again.";
+
+  /* ---------- helpers ---------- */
+  const pad = n => String(n).padStart(2, '0');
+  const dayKey = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+  const toMin = hhmm => { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; };
+  const fmtTime = hhmm => { const [h, m] = hhmm.split(':').map(Number); return `${h % 12 || 12}:${pad(m)} ${h < 12 ? 'AM' : 'PM'}`; };
+  const fmtClock = ts => new Date(ts).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  function fmtStamp(ts) {
+    const d = new Date(ts), now = new Date(), y = new Date(now);
+    y.setDate(now.getDate() - 1);
+    const k = dayKey(d);
+    const day = k === dayKey(now) ? 'Today' : k === dayKey(y) ? 'Yesterday'
+      : d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    return `${day} · ${fmtClock(ts)}`;
+  }
+  const fmtAgo = min => min < 60 ? `${min} min` : `${Math.floor(min / 60)} h ${min % 60} min`;
+
+  const I = {
+    sliders: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 8h9M17 8h3M15 5v6M4 16h3M11 16h9M9 13v6"/></svg>',
+    x: '<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+    camera: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linejoin="round"><path d="M3 8.5A1.5 1.5 0 0 1 4.5 7h3L9 5h6l1.5 2h3A1.5 1.5 0 0 1 21 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+    mascot: '<svg class="mascot" viewBox="0 0 100 100" aria-hidden="true"><path d="M21 38 L25 7 L45 30 Z M53 30 L71 7 L77 38 Z" fill="#FF6352" stroke="#22090F" stroke-width="4" stroke-linejoin="round"/><rect x="15" y="29" width="80" height="66" rx="30" fill="#22090F"/><rect x="8" y="23" width="80" height="66" rx="30" fill="#C41E45" stroke="#22090F" stroke-width="4"/><path d="M25 38 L27 22 L37 33 Z M61 33 L69 22 L72 38 Z" fill="#FF6352"/><circle cx="31" cy="51" r="5.2" fill="#fff"/><circle cx="51" cy="47" r="5.2" fill="#fff"/><path d="M37 72 Q45 64 54 71" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+  };
+
+  /* ---------- storage (IndexedDB, with in-memory fallback) ---------- */
+  const DB = {
+    db: null,
+    mem: { tasks: new Map(), completions: new Map() },
+    async open() {
+      try {
+        this.db = await new Promise((res, rej) => {
+          const r = indexedDB.open('demon-time', 1);
+          r.onupgradeneeded = () => {
+            const d = r.result;
+            d.createObjectStore('tasks', { keyPath: 'id' });
+            d.createObjectStore('completions', { keyPath: 'id' });
+          };
+          r.onsuccess = () => res(r.result);
+          r.onerror = () => rej(r.error);
+          r.onblocked = () => rej(new Error('blocked'));
+        });
+        try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (_) {}
+      } catch (_) { this.db = null; }
+      return !!this.db;
+    },
+    req(store, mode, fn) {
+      return new Promise((res, rej) => {
+        const t = this.db.transaction(store, mode);
+        const r = fn(t.objectStore(store));
+        let out;
+        if (r) r.onsuccess = () => { out = r.result; };
+        t.oncomplete = () => res(out);
+        t.onerror = () => rej(t.error);
+        t.onabort = () => rej(t.error);
+      });
+    },
+    all(s) { return this.db ? this.req(s, 'readonly', o => o.getAll()) : Promise.resolve([...this.mem[s].values()]); },
+    get(s, id) { return this.db ? this.req(s, 'readonly', o => o.get(id)) : Promise.resolve(this.mem[s].get(id)); },
+    put(s, v) { if (!this.db) { this.mem[s].set(v.id, v); return Promise.resolve(); } return this.req(s, 'readwrite', o => o.put(v)); },
+    del(s, id) { if (!this.db) { this.mem[s].delete(id); return Promise.resolve(); } return this.req(s, 'readwrite', o => o.delete(id)); },
+    async clear() {
+      if (!this.db) { this.mem.tasks.clear(); this.mem.completions.clear(); return; }
+      await this.req('tasks', 'readwrite', o => o.clear());
+      await this.req('completions', 'readwrite', o => o.clear());
+    },
+  };
+
+  /* ---------- state ---------- */
+  const S = {
+    persistent: true,
+    tasks: [],
+    comps: [],            // completion metadata (photo bytes live in IndexedDB)
+    urls: new Map(),      // completion id -> object URL
+    failed: new Set(),    // completion ids whose photo failed to load
+    toast: null,
+    lineupOpen: false,
+    editId: null,
+    confirm: null,        // 'delete' | 'clear'
+    draft: { name: '', time: '08:00' },
+    capture: null,        // { mode: 'complete', taskId } | { mode: 'replace', id }
+    overlay: null,
+    sig: '',
+  };
+
+  const photoBlob = rec => new Blob([rec.photo], { type: rec.type || 'image/jpeg' });
+  const meta = rec => { const { photo, ...m } = rec; return m; };
+
+  async function load() {
+    S.persistent = await DB.open();
+    S.tasks = await DB.all('tasks');
+    const all = await DB.all('completions');
+    const cutoff = Date.now() - RETENTION_MS;
+    S.comps = [];
+    for (const rec of all) {
+      if (rec.timestamp < cutoff) { await DB.del('completions', rec.id); continue; }
+      S.comps.push(meta(rec));
+      setUrl(rec);
+    }
+  }
+  function setUrl(rec) {
+    const old = S.urls.get(rec.id);
+    if (old) URL.revokeObjectURL(old);
+    try { S.urls.set(rec.id, URL.createObjectURL(photoBlob(rec))); S.failed.delete(rec.id); }
+    catch (_) { S.urls.delete(rec.id); S.failed.add(rec.id); }
+  }
+  function prune() {
+    const cutoff = Date.now() - RETENTION_MS;
+    const stale = S.comps.filter(c => c.timestamp < cutoff);
+    if (!stale.length) return;
+    stale.forEach(c => { DB.del('completions', c.id); const u = S.urls.get(c.id); if (u) URL.revokeObjectURL(u); S.urls.delete(c.id); });
+    S.comps = S.comps.filter(c => c.timestamp >= cutoff);
+  }
+
+  /* ---------- status ---------- */
+  function statusOf(task, now = new Date()) {
+    const today = dayKey(now);
+    const done = S.comps.filter(c => c.taskId === task.id && c.day === today).sort((a, b) => b.timestamp - a.timestamp)[0];
+    if (done) return { state: 'done', comp: done };
+    const late = now.getHours() * 60 + now.getMinutes() - toMin(task.time);
+    if (late < 0) return { state: 'upcoming' };
+    return { state: late < DUE_WINDOW_MIN ? 'due' : 'overdue', late };
+  }
+  const RANK = { overdue: 0, due: 1, upcoming: 2, done: 3 };
+  function items() {
+    const now = new Date();
+    return S.tasks.map(t => ({ t, ...statusOf(t, now) }))
+      .sort((a, b) => RANK[a.state] - RANK[b.state] || toMin(a.t.time) - toMin(b.t.time));
+  }
+  const signature = () => dayKey(new Date()) + '|' + items().map(i => i.t.id + i.state + (i.state === 'overdue' ? Math.floor(i.late / 5) : '')).join(',');
+
+  /* ---------- render ---------- */
+  const app = document.getElementById('app');
+  const ovRoot = document.getElementById('overlay-root');
+
+  function render() {
+    const focus = document.activeElement && app.contains(document.activeElement) ? document.activeElement.id : null;
+    const list = items();
+    S.sig = signature();
+    app.innerHTML = [
+      `<div class="brand">${I.mascot}Demon Time</div>`,
+      header(),
+      !S.persistent ? `<div class="toast warn" role="status">Photos can't be stored in this browser, so they'll be gone when you close the app.</div>` : '',
+      S.toast ? `<div class="toast" role="status"><span>${esc(S.toast.text)}</span><button data-act="dismiss-toast" aria-label="Dismiss">${I.x}</button></div>` : '',
+      S.lineupOpen ? lineup() : '',
+      S.tasks.length ? hero(list) : onboarding(),
+      S.tasks.length ? quest(list) : '',
+      vault(),
+    ].join('');
+    if (focus) { const el = document.getElementById(focus); if (el) { el.focus({ preventScroll: true }); } }
+    syncButtons();
+  }
+
+  function header() {
+    const date = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    return `<header class="top">
+      <div><div class="date">${date}</div><h1 class="today">Today</h1></div>
+      <button class="icon-btn" data-act="toggle-lineup" aria-pressed="${S.lineupOpen}" aria-label="Edit tasks and times">${I.sliders}</button>
+    </header>`;
+  }
+
+  function onboarding() {
+    return `<section class="card onboard">
+      ${I.mascot}
+      <p class="eyebrow">Summon your first task</p>
+      <h2>Set a time. Slay the task.</h2>
+      <p class="lead">Pick what needs doing and when. At go time, snap a photo to knock it out.</p>
+      <hr>
+      <form class="form" data-form="first">
+        <label for="first-name">Task</label>
+        <input class="field" id="first-name" name="name" placeholder="e.g. Feed the cat" autocomplete="off" maxlength="60" value="${esc(S.draft.name)}">
+        <label for="first-time">Go time</label>
+        <input class="field" id="first-time" name="time" type="time" required value="${esc(S.draft.time)}">
+        <button class="btn primary" type="submit" data-needs-name>Summon task</button>
+      </form>
+    </section>`;
+  }
+
+  function lineup() {
+    const sorted = [...S.tasks].sort((a, b) => toMin(a.time) - toMin(b.time));
+    const editing = S.editId && S.tasks.find(t => t.id === S.editId);
+    const hasData = S.tasks.length || S.comps.length;
+    return `<section class="card" aria-label="Tasks and times">
+      <div class="lineup-head">
+        <div><p class="eyebrow">Your lineup</p><h2 class="card-title">Tasks &amp; times</h2></div>
+        <button class="link" data-act="close-lineup">Done</button>
+      </div>
+      ${sorted.length ? `<ul class="lineup-list">${sorted.map(t => `
+        <li class="${t.id === S.editId ? 'editing' : ''}">
+          <span class="t">${fmtTime(t.time)}</span><span class="n">${esc(t.name)}</span>
+          <button class="link" data-act="edit" data-id="${t.id}">${t.id === S.editId ? 'Editing' : 'Edit'}</button>
+        </li>`).join('')}</ul>` : ''}
+      <form class="form" data-form="lineup">
+        <label for="task-name">${editing ? 'Rename task' : 'Task'}</label>
+        <input class="field" id="task-name" name="name" placeholder="What needs doing?" autocomplete="off" maxlength="60" value="${esc(S.draft.name)}">
+        <label for="task-time">Time</label>
+        <input class="field" id="task-time" name="time" type="time" required value="${esc(S.draft.time)}">
+        <button class="btn primary" type="submit" data-needs-name>${editing ? 'Save' : 'Add task'}</button>
+      </form>
+      ${editing ? `<div class="edit-row">
+        <button class="link quiet" data-act="cancel-edit">Cancel</button>
+        <button class="link danger" data-act="ask-delete">Delete</button>
+      </div>` : ''}
+      ${S.confirm === 'delete' && editing ? confirmBox(`Delete this task?`, 'Keep it', 'Delete', 'do-delete') : ''}
+      ${hasData ? `<div class="clear-zone">
+        ${S.confirm === 'clear' ? confirmBox("Clear all tasks and history? This can't be undone.", 'Cancel', 'Clear everything', 'do-clear')
+          : `<button class="link danger" data-act="ask-clear">Clear all data</button>`}
+      </div>` : ''}
+    </section>`;
+  }
+
+  const confirmBox = (q, keep, go, act) => `<div class="confirm" role="alertdialog" aria-label="${esc(q)}">
+      <span>${esc(q)}</span>
+      <div class="row-btns"><button class="keep" data-act="cancel-confirm">${keep}</button><button class="go" data-act="${act}">${go}</button></div>
+    </div>`;
+
+  function hero(list) {
+    const pending = list.filter(i => i.state === 'due' || i.state === 'overdue');
+    if (pending.length) {
+      const i = pending[0];
+      const over = i.state === 'overdue';
+      const more = pending.length - 1;
+      return `<section class="hero ${i.state}">
+        <span class="oni" aria-hidden="true">👹</span>
+        <div class="meta"><span class="tag"><span class="pulse"></span>${over ? 'Overdue' : 'It’s demon time'}</span><span>${fmtTime(i.t.time)}</span></div>
+        <h2>${over ? 'Still waiting on proof' : 'Show us you did it'}</h2>
+        <p class="task">${esc(i.t.name)}</p>
+        <button class="btn snap" data-act="snap" data-id="${i.t.id}">${I.camera}Snap to finish</button>
+        <p class="note">${over ? `${fmtAgo(i.late)} past go time. This beast stays put until you snap the photo.` : 'This beast stays put until you snap the photo.'}</p>
+        ${more ? `<p class="more">+ ${more} more task${more > 1 ? 's' : ''} waiting below</p>` : ''}
+      </section>`;
+    }
+    if (list.every(i => i.state === 'done')) {
+      return `<section class="hero won">
+        <span class="oni" aria-hidden="true">👹</span>
+        <span class="ring" aria-hidden="true">${I.check}</span>
+        <p class="eyebrow">The demons have been defeated</p>
+        <h2>You crushed today</h2>
+        <p class="sub">Your victory photos are safe in the vault.</p>
+      </section>`;
+    }
+    const next = list.find(i => i.state === 'upcoming');
+    const doneCount = list.filter(i => i.state === 'done').length;
+    return `<section class="card idle">
+      ${I.mascot}
+      <div>
+        <p class="eyebrow">Next up · ${fmtTime(next.t.time)}</p>
+        <h2>${esc(next.t.name)}</h2>
+        <p>${doneCount ? `${doneCount} down. ` : ''}The demon wakes at ${fmtTime(next.t.time)}.</p>
+      </div>
+    </section>`;
+  }
+
+  function thumb(c, badge) {
+    if (S.failed.has(c.id) || !S.urls.get(c.id)) {
+      return `<span class="retry" role="button" tabindex="0" data-act="retry" data-id="${c.id}">Retry</span>`;
+    }
+    return `<span class="thumb"><img src="${S.urls.get(c.id)}" alt="" data-cid="${c.id}">${badge ? `<span class="badge">${I.check}</span>` : ''}</span>`;
+  }
+
+  function quest(list) {
+    const done = list.filter(i => i.state === 'done').length;
+    const rows = list.map(i => {
+      let status, right;
+      if (i.state === 'done') { status = `Defeated at ${fmtClock(i.comp.timestamp)}`; right = thumb(i.comp, true); }
+      else if (i.state === 'due') { status = 'Photo needed'; right = `<span class="pill">Take photo</span>`; }
+      else if (i.state === 'overdue') { status = 'Overdue · photo needed'; right = `<span class="pill">Take photo</span>`; }
+      else { status = 'Upcoming'; right = `<span class="ring-empty" aria-hidden="true"></span>`; }
+      const label = { done: 'Done', due: 'Due now', overdue: 'Overdue', upcoming: 'Upcoming' }[i.state];
+      return `<li><button class="task-row ${i.state}" data-act="row" data-id="${i.t.id}">
+        <span class="time">${fmtTime(i.t.time)}</span>
+        <span><div class="name">${esc(i.t.name)}</div><div class="status"><span class="sr-only">${label}. </span>${status}</div></span>
+        ${right}
+      </button></li>`;
+    }).join('');
+    return `<section class="section">
+      <div class="section-head">
+        <div><p class="eyebrow">Today’s quest</p><h2 class="section-title">Tasks</h2></div>
+        <span class="count" aria-label="${done} of ${list.length} done">${done}/${list.length}</span>
+      </div>
+      <ul class="rows">${rows}</ul>
+    </section>`;
+  }
+
+  function vault() {
+    if (!S.comps.length) return '';
+    const sorted = [...S.comps].sort((a, b) => b.timestamp - a.timestamp);
+    return `<section class="section">
+      <div class="section-head plain"><div><p class="eyebrow">Victory vault</p><h2 class="section-title">Photo history</h2></div></div>
+      <div class="vault">${sorted.map(c => `
+        <button class="vault-item" data-act="view" data-id="${c.id}">
+          ${thumb(c, false)}
+          <span><div class="name">${esc(c.taskName)}</div><div class="stamp">${fmtStamp(c.timestamp)}</div></span>
+          <span class="sched">${fmtTime(c.taskTime)}</span>
+        </button>`).join('')}
+      </div>
+    </section>`;
+  }
+
+  /* ---------- overlay (preview + viewer) ---------- */
+  function renderOverlay() {
+    const o = S.overlay;
+    document.body.classList.toggle('locked', !!o);
+    if (!o) { ovRoot.innerHTML = ''; return; }
+    const close = `<button class="ov-close" data-act="close-ov" aria-label="Close">${I.x}</button>`;
+    if (o.type === 'busy') {
+      ovRoot.innerHTML = `<div class="overlay ov" role="dialog" aria-label="Checking photo"><div class="ov-img"><div class="busy"><div class="spinner"></div>Checking photo…</div></div></div>`;
+      return;
+    }
+    if (o.type === 'preview') {
+      ovRoot.innerHTML = `<div class="overlay ov" role="dialog" aria-label="Photo preview">
+        <div class="ov-top"><div class="who"><small>${o.replace ? 'New photo for' : 'Proof for'}</small><strong>${esc(o.name)}</strong></div>${close}</div>
+        <div class="ov-img">${o.url ? `<img src="${o.url}" alt="Photo you just took">` : ''}</div>
+        ${o.error ? `<p class="ov-err" role="alert">${esc(o.error)}</p>` : ''}
+        <div class="ov-actions">
+          ${o.error ? `<button class="btn primary" data-act="retake">${I.camera}Take it again</button>`
+            : `<button class="btn ghost" data-act="retake">Retake</button><button class="btn primary" data-act="use-photo">Use photo</button>`}
+        </div>
+      </div>`;
+      return;
+    }
+    if (o.type === 'viewer') {
+      const c = S.comps.find(x => x.id === o.id);
+      if (!c) { S.overlay = null; renderOverlay(); return; }
+      const url = S.urls.get(c.id);
+      ovRoot.innerHTML = `<div class="overlay ov" role="dialog" aria-label="Photo">
+        <div class="ov-top"><div class="who"><small>${fmtStamp(c.timestamp)}</small><strong>${esc(c.taskName)}</strong></div>${close}</div>
+        <div class="ov-img">${url && !S.failed.has(c.id) ? `<img src="${url}" alt="Photo proof for ${esc(c.taskName)}" data-cid="${c.id}">`
+          : `<div class="busy">This photo didn't load.<button class="btn ghost" style="width:auto;padding:0 20px" data-act="retry" data-id="${c.id}">Retry</button></div>`}</div>
+        ${c.replacedAt ? `<p class="ov-note">Photo replaced ${fmtStamp(c.replacedAt)}</p>` : ''}
+        ${o.confirm ? `<div class="confirm" role="alertdialog"><span>Replace this photo? The current one will be overwritten.</span>
+            <div class="row-btns"><button class="keep" data-act="cancel-replace">Keep it</button><button class="go" data-act="do-replace">Replace</button></div></div>`
+          : `<div class="ov-actions"><button class="btn ghost" data-act="ask-replace">${I.camera}Replace photo</button></div>`}
+      </div>`;
+    }
+  }
+
+  /* ---------- camera + JPEG pipeline ---------- */
+  const camera = document.getElementById('camera');
+  function openCamera(capture) {
+    S.capture = capture;
+    camera.value = '';
+    camera.click();
+  }
+
+  function decode(blob) {
+    return new Promise((res, rej) => {
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+      img.onload = () => { img.naturalWidth && img.naturalHeight ? res({ img, url }) : (URL.revokeObjectURL(url), rej(new Error('empty'))); };
+      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('decode')); };
+      img.src = url;
+    });
+  }
+
+  async function toJpeg(file) {
+    if (!file || !file.size) throw new Error('empty file');
+    const { img, url } = await decode(file);
+    try {
+      const scale = Math.min(1, MAX_EDGE / Math.max(img.naturalWidth, img.naturalHeight));
+      const w = Math.max(1, Math.round(img.naturalWidth * scale)), h = Math.max(1, Math.round(img.naturalHeight * scale));
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.85));
+      if (!blob) throw new Error('encode');
+      return blob;
+    } finally { URL.revokeObjectURL(url); }
+  }
+
+  async function validateJpeg(blob) {
+    if (!blob || blob.size < 512 || blob.type !== 'image/jpeg') throw new Error('invalid');
+    const head = new Uint8Array(await blob.slice(0, 3).arrayBuffer());
+    if (head[0] !== 0xFF || head[1] !== 0xD8 || head[2] !== 0xFF) throw new Error('not jpeg');
+    const { url } = await decode(blob);
+    URL.revokeObjectURL(url);
+  }
+
+  camera.addEventListener('change', async () => {
+    const file = camera.files && camera.files[0];
+    const cap = S.capture;
+    if (!file || !cap) return;
+    const name = cap.mode === 'complete'
+      ? (S.tasks.find(t => t.id === cap.taskId) || {}).name
+      : (S.comps.find(c => c.id === cap.id) || {}).taskName;
+    dropPreviewUrl();
+    S.overlay = { type: 'busy' };
+    renderOverlay();
+    try {
+      const blob = await toJpeg(file);
+      S.overlay = { type: 'preview', name: name || 'Task', replace: cap.mode === 'replace', blob, url: URL.createObjectURL(blob) };
+    } catch (_) {
+      S.overlay = { type: 'preview', name: name || 'Task', replace: cap.mode === 'replace', error: PHOTO_ERROR };
+    }
+    renderOverlay();
+  });
+
+  function dropPreviewUrl() {
+    if (S.overlay && S.overlay.type === 'preview' && S.overlay.url) URL.revokeObjectURL(S.overlay.url);
+  }
+
+  async function usePhoto() {
+    const o = S.overlay, cap = S.capture;
+    if (!o || !o.blob || !cap) return;
+    const fail = () => { dropPreviewUrl(); S.overlay = { ...o, url: null, blob: null, error: PHOTO_ERROR }; renderOverlay(); };
+    try {
+      await validateJpeg(o.blob);
+      const buf = await o.blob.arrayBuffer();
+      let rec;
+      if (cap.mode === 'complete') {
+        const t = S.tasks.find(x => x.id === cap.taskId);
+        if (!t) throw new Error('task gone');
+        const now = new Date();
+        rec = { id: uid(), taskId: t.id, taskName: t.name, taskTime: t.time, day: dayKey(now), timestamp: now.getTime(), photo: buf, type: 'image/jpeg' };
+      } else {
+        const old = await DB.get('completions', cap.id);
+        if (!old) throw new Error('entry gone');
+        rec = { ...old, photo: buf, type: 'image/jpeg', replacedAt: Date.now() };
+      }
+      await DB.put('completions', rec);
+      // Read it back: a completion only counts if the stored photo is intact.
+      const back = await DB.get('completions', rec.id);
+      if (!back || !back.photo || back.photo.byteLength !== buf.byteLength) throw new Error('write check failed');
+      S.comps = S.comps.filter(c => c.id !== rec.id).concat(meta(back));
+      setUrl(back);
+      dropPreviewUrl();
+      S.overlay = cap.mode === 'replace' ? { type: 'viewer', id: rec.id } : null;
+      S.capture = null;
+      toast(cap.mode === 'replace' ? 'Photo replaced.' : 'Task defeated. Photo saved.');
+      render(); renderOverlay();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (_) { fail(); }
+  }
+
+  async function retry(id) {
+    try {
+      const rec = await DB.get('completions', id);
+      if (!rec || !rec.photo) throw new Error('missing');
+      setUrl(rec);
+    } catch (_) { S.failed.add(id); }
+    render(); renderOverlay();
+  }
+
+  /* ---------- actions ---------- */
+  let toastTimer;
+  function toast(text) {
+    S.toast = { text };
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { S.toast = null; render(); }, 6000);
+  }
+
+  function resetDraft() { S.draft = { name: '', time: '08:00' }; S.editId = null; S.confirm = null; }
+
+  async function submitTask(form) {
+    const name = form.name.value.trim().replace(/\s+/g, ' ');
+    const time = form.time.value;
+    if (!name || !/^\d{2}:\d{2}$/.test(time)) return;
+    const editing = S.editId && S.tasks.find(t => t.id === S.editId);
+    const task = editing ? { ...editing, name, time } : { id: uid(), name, time, createdAt: Date.now() };
+    await DB.put('tasks', task);
+    S.tasks = S.tasks.filter(t => t.id !== task.id).concat(task);
+    const first = form.dataset.form === 'first';
+    toast(editing ? 'Task saved.' : 'Task summoned.');
+    resetDraft();
+    if (first) S.lineupOpen = false;
+    render();
+  }
+
+  app.addEventListener('submit', e => {
+    const form = e.target.closest('form[data-form]');
+    if (!form) return;
+    e.preventDefault();
+    submitTask(form);
+  });
+
+  app.addEventListener('input', e => {
+    const f = e.target.closest('form[data-form]');
+    if (!f) return;
+    S.draft = { name: f.name.value, time: f.time.value };
+    syncButtons();
+  });
+
+  function syncButtons() {
+    app.querySelectorAll('form[data-form]').forEach(f => {
+      const b = f.querySelector('[data-needs-name]');
+      if (b) b.disabled = !f.name.value.trim() || !f.time.value;
+    });
+  }
+
+  app.addEventListener('error', e => {
+    const id = e.target && e.target.dataset && e.target.dataset.cid;
+    if (id) { S.failed.add(id); render(); }
+  }, true);
+  ovRoot.addEventListener('error', e => {
+    const id = e.target && e.target.dataset && e.target.dataset.cid;
+    if (id) { S.failed.add(id); renderOverlay(); render(); }
+  }, true);
+
+  async function handle(act, id) {
+    switch (act) {
+      case 'toggle-lineup':
+        S.lineupOpen = !S.lineupOpen; resetDraft(); render(); break;
+      case 'close-lineup':
+        S.lineupOpen = false; resetDraft(); render(); break;
+      case 'dismiss-toast':
+        S.toast = null; render(); break;
+      case 'edit': {
+        const t = S.tasks.find(x => x.id === id);
+        if (!t) return;
+        S.editId = t.id; S.confirm = null; S.draft = { name: t.name, time: t.time };
+        render();
+        const el = document.getElementById('task-name'); if (el) el.focus();
+        break;
+      }
+      case 'cancel-edit': resetDraft(); render(); break;
+      case 'ask-delete': S.confirm = 'delete'; render(); break;
+      case 'ask-clear': S.confirm = 'clear'; render(); break;
+      case 'cancel-confirm': S.confirm = null; render(); break;
+      case 'do-delete':
+        await DB.del('tasks', S.editId);
+        S.tasks = S.tasks.filter(t => t.id !== S.editId);
+        resetDraft(); toast('Task deleted.'); render(); break;
+      case 'do-clear':
+        await DB.clear();
+        S.urls.forEach(u => URL.revokeObjectURL(u));
+        S.tasks = []; S.comps = []; S.urls.clear(); S.failed.clear();
+        resetDraft(); S.lineupOpen = false; toast('All tasks and history cleared.'); render(); break;
+      case 'snap':
+        openCamera({ mode: 'complete', taskId: id }); break;
+      case 'row': {
+        const t = S.tasks.find(x => x.id === id);
+        if (!t) return;
+        const st = statusOf(t);
+        if (st.state === 'due' || st.state === 'overdue') openCamera({ mode: 'complete', taskId: id });
+        else if (st.state === 'done') { S.overlay = { type: 'viewer', id: st.comp.id }; renderOverlay(); }
+        else { S.lineupOpen = true; await handle('edit', id); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        break;
+      }
+      case 'view': S.overlay = { type: 'viewer', id }; renderOverlay(); break;
+      case 'retry': await retry(id); break;
+      case 'close-ov': dropPreviewUrl(); S.overlay = null; S.capture = null; renderOverlay(); break;
+      case 'retake': camera.value = ''; camera.click(); break;
+      case 'use-photo': await usePhoto(); break;
+      case 'ask-replace': S.overlay = { ...S.overlay, confirm: true }; renderOverlay(); break;
+      case 'cancel-replace': S.overlay = { ...S.overlay, confirm: false }; renderOverlay(); break;
+      case 'do-replace': {
+        const cid = S.overlay.id;
+        S.overlay = { type: 'viewer', id: cid };
+        renderOverlay();
+        openCamera({ mode: 'replace', id: cid });
+        break;
+      }
+    }
+  }
+
+  function onClick(e) {
+    const el = e.target.closest('[data-act]');
+    if (!el) return;
+    if (el.dataset.act === 'retry') e.stopPropagation();
+    handle(el.dataset.act, el.dataset.id);
+  }
+  app.addEventListener('click', onClick);
+  ovRoot.addEventListener('click', onClick);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && S.overlay && S.overlay.type !== 'busy') handle('close-ov');
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.retry')) { e.preventDefault(); e.stopPropagation(); handle('retry', e.target.dataset.id); }
+  });
+
+  /* ---------- keep statuses fresh ---------- */
+  function refresh() {
+    prune();
+    if (signature() !== S.sig) render();
+  }
+  setInterval(refresh, 20000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { refresh(); window.scrollTo({ top: 0 }); } });
+
+  load().then(render, () => { S.persistent = false; render(); });
+
+  if ('serviceWorker' in navigator && location.protocol === 'https:' && document.querySelector('link[rel="manifest"]')) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+})();
+</script>
+<!--ARTIFACT-END-->
+</body>
+</html>
