@@ -135,8 +135,9 @@ h1.today { margin: 2px 0 0; font-size: 46px; line-height: .95; font-weight: 900;
   font: 700 16px/1 var(--font); color: var(--ink);
 }
 .field::placeholder { color: var(--faint); opacity: 1; }
-input[type="time"].field { text-align: left; }
-input[type="time"].field::-webkit-date-and-time-value { text-align: left; }
+/* iOS Safari top-aligns the value inside time inputs; pin it to the field's inner height */
+input[type="time"].field { text-align: left; line-height: 42px; }
+input[type="time"].field::-webkit-date-and-time-value { text-align: left; line-height: 42px; margin: 0; }
 .btn {
   display: flex; align-items: center; justify-content: center; gap: 10px;
   width: 100%; height: 44px; border: 0; border-radius: 14px;
