@@ -604,7 +604,7 @@ input[type="time"].field::-webkit-date-and-time-value { text-align: left; line-h
     }).join('');
     return `<section class="section">
       <div class="section-head">
-        <div><p class="eyebrow">Today’s quest</p><h2 class="section-title">Tasks</h2></div>
+        <h2 class="section-title">Today’s quest</h2>
         <span class="count" aria-label="${done} of ${list.length} done">${done}/${list.length}</span>
       </div>
       <ul class="rows">${rows}</ul>
@@ -615,7 +615,7 @@ input[type="time"].field::-webkit-date-and-time-value { text-align: left; line-h
     if (!S.comps.length) return '';
     const sorted = [...S.comps].sort((a, b) => b.timestamp - a.timestamp);
     return `<section class="section">
-      <div class="section-head plain"><div><p class="eyebrow">Victory vault</p><h2 class="section-title">Photo history</h2></div></div>
+      <div class="section-head plain"><h2 class="section-title">Victory vault</h2></div>
       <div class="vault">${sorted.map(c => `
         <button class="vault-item" data-act="view" data-id="${c.id}">
           ${thumb(c, false)}
