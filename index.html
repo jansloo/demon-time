@@ -153,7 +153,7 @@ input[type="time"].field::-webkit-date-and-time-value { text-align: left; line-h
 .link.quiet { color: var(--muted); }
 
 /* lineup panel */
-.lineup-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+.lineup-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; }
 .lineup-list { list-style: none; margin: 0 0 8px; padding: 0; }
 .lineup-list li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
 .lineup-list li:first-child { border-top: 1px solid var(--rule); }
@@ -509,9 +509,9 @@ input[type="time"].field::-webkit-date-and-time-value { text-align: left; line-h
     const sorted = [...S.tasks].sort((a, b) => toMin(a.time) - toMin(b.time));
     const editing = S.editId && S.tasks.find(t => t.id === S.editId);
     const hasData = S.tasks.length || S.comps.length;
-    return `<section class="card" aria-label="Tasks and times">
+    return `<section class="card" aria-label="Your lineup">
       <div class="lineup-head">
-        <div><p class="eyebrow">Your lineup</p><h2 class="card-title">Tasks &amp; times</h2></div>
+        <h2 class="card-title">Your lineup</h2>
         <button class="link" data-act="close-lineup">Done</button>
       </div>
       ${sorted.length ? `<ul class="lineup-list">${sorted.map(t => `
